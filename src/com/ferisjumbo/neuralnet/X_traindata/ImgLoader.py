@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 img_dir = (
-    "src/com/ferisjumbo/neuralnet/X_train-data/"  # The directory to the training data
+    "src/com/ferisjumbo/neuralnet/X_traindata/"  # The directory to the training data
 )
 
 

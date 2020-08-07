@@ -1,3 +1,6 @@
+# Dont want to upload files ending with png
+*.png
+
 # Visual Studio Code
 .vscode/
 numerical_nn.code-workspace
