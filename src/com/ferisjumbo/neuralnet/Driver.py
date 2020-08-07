@@ -9,17 +9,17 @@ np.random.seed(0)
 
 X_train, y_train = traindata.get_training_data()
 
-dense1 = nU.Layer_Dense(1024, 512, weight_regularizer_l2=1e-3, bias_regularizer_l2=1e-3)
+dense1 = nU.Layer_Dense(1024, 768, weight_regularizer_l2=1e-2, bias_regularizer_l2=1e-2)
 activation1 = nU.ReLU_Activation()
-dense2 = nU.Layer_Dense(512, 384, weight_regularizer_l2=1e-3, bias_regularizer_l2=1e-3)
+dense2 = nU.Layer_Dense(768, 512, weight_regularizer_l2=1e-3, bias_regularizer_l2=1e-3)
 activation2 = nU.ReLU_Activation()
-dense3 = nU.Layer_Dense(384, 10)
+dense3 = nU.Layer_Dense(512, 10)
 activation3 = nU.Softmax_Activation()
 
 loss_function = nU.Loss_CategoricalCrossentropy()
-optimizer = op.Optimizer_Adam(learning_rate=5e-3, decay=1e-8)
+optimizer = op.Optimizer_Adam(learning_rate=2.5e-4, decay=1e-8)
 
-epochs = 1000
+epochs = 2500
 loop = tqdm(total=epochs, position=0, leave=False)
 
 for epoch in range(epochs + 1):
@@ -86,7 +86,7 @@ for epoch in range(epochs + 1):
 
 loop.close()
 
-X_test, y_test = traindata.get_testing_data("three", 1)
+X_test, y_test = traindata.get_testing_data("zero", 1)
 
 dense1.forward_propagation(X_test)
 activation1.forward_propagation(dense1.output)
@@ -109,4 +109,27 @@ predictions = np.argmax(activation3.output, axis=1)
 accuracy = np.mean(predictions == y_test)
 
 print(f"\nvalidation check:\nacc:{accuracy:3f} loss:{loss:3f}")
-print(activation3.output)
+
+regular_output = []
+for layer in activation3.output:
+    for conf in layer:
+        regular_output.append(conf)
+
+neural_net_choice = np.argmax(regular_output)
+neural_net_choice_confidence = round(regular_output[neural_net_choice] * 100, 2)
+
+regular_output[neural_net_choice] = 0
+
+secondary_neural_net_choice = np.argmax(regular_output)
+secondary_neural_net_choice_confidence = round(
+    regular_output[secondary_neural_net_choice] * 100, 2
+)
+
+print(
+    "\n\nThe probablility of picking a random number is 10.0%.\nIn order for the Neural Net to be considered trained, its prediction should be >60.0%."
+)
+print(
+    f"\nDrawn Number {y_test}. NeuralNet predicted [{neural_net_choice}] at {neural_net_choice_confidence}% confidence!",
+    f"\n\tThe secondary choice is [{secondary_neural_net_choice}] at {secondary_neural_net_choice_confidence}% confidence.",
+)
+# print(f"\nRaw data from output layer:\n{activation3.output}")
